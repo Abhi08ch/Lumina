@@ -76,8 +76,6 @@ python app.py
 
 ## 📂 Useful Files
 - `requirements.txt` — Pin dependency versions  
-- `.gitignore` — Exclude unnecessary files  
-- `LICENSE` — Add your license (MIT, Apache2, etc.)  
 
 ---
 
