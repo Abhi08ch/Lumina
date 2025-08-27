@@ -94,3 +94,6 @@ python app.py
 ---
 
 ### ⭐ If you like this project, give it a star on GitHub!
+
+<img width="1763" height="1923" alt="image" src="https://github.com/user-attachments/assets/c582e75c-1d3b-4bdc-a9af-b6d92b40466a" />
+
