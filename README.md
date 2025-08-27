@@ -3,7 +3,6 @@
 > **A local-first, privacy-focused document chat app** using **PyMuPDF**, **SentenceTransformers**, **FAISS**, and **Ollama LLMs**.  
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
-![License](https://img.shields.io/badge/License-MIT-green)
 ![Local-First](https://img.shields.io/badge/Local-First-orange)
 ![Ollama](https://img.shields.io/badge/LLM-Ollama-ff69b4)
 
