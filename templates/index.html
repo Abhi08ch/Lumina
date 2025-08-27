@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina</title>
+    <!-- Lumina favicon -->
+    <link rel="icon" type="image/svg+xml" href="/static/img/logo.svg" />
+    <meta name="theme-color" content="#6f6dff" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9ff;
+            --bg-accent: #e8ebff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --accent-color: #667eea;
+            --accent-light: #e8ebff;
+            --border-color: #e2e8f0;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --icon-size: 40px;        
+            --icon-font-size: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --bg-accent: #4a5568;
+            --text-primary: #f7fafc;
+            --text-secondary: #a0aec0;
+            --accent-color: #667eea;
+            --accent-light: #4a5568;
+            --border-color: #4a5568;
+            --success-color: #68d391;
+            --warning-color: #f6ad55;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+    .theme-toggle {
+        position: fixed;              /* float at top-right of viewport */
+        top: 18px;
+        right: 18px;
+        z-index: 9999;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        border-radius: 999px;
+        padding: 0.5rem 0.95rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.15s ease, background 0.18s ease, border-color 0.18s ease;
+        -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Hover/focus */
+        .theme-toggle:hover,
+        .theme-toggle:focus {
+        transform: translateY(-2px);
+        background: var(--accent-light);
+        border-color: var(--accent-color);
+        outline: none;
+        }
+
+    /* Smaller appearance on very small screens: return to header flow */
+    @media (max-width: 768px) {
+    .theme-toggle {
+        position: absolute;   /* keep inside header on small screens */
+        top: 0.6rem;
+        right: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+    }
+
+    /* Optional: slightly smaller icon */
+    .theme-toggle #theme-icon {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    }
+
+    /* When toggled to dark, make icon label color more visible (example) */
+    [data-theme="dark"] .theme-toggle #theme-icon,
+    [data-theme="dark"] .theme-toggle #theme-text {
+    color: var(--text-secondary);
+    }
+
+    /* Download Chat button placed in chat header next to other controls */
+        .download-chat-btn {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            gap: 0.45rem;
+            align-items: center;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            z-index: 9998;
+        }
+        .download-chat-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .tech-stack {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-blue {
+            background: var(--accent-light);
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+        }
+
+        .badge-green {
+            background: #f0fff4;
+            color: var(--success-color);
+            border: 2px solid var(--success-color);
+        }
+
+        .badge-orange {
+            background: #fffaf0;
+            color: var(--warning-color);
+            border: 2px solid var(--warning-color);
+        }
+
+        [data-theme="dark"] .badge-green {
+            background: rgba(72, 187, 120, 0.2);
+        }
+
+        [data-theme="dark"] .badge-orange {
+            background: rgba(237, 137, 54, 0.2);
+        }
+
+        .main-content {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area {
+            text-align: center;
+            padding: 3rem;
+            border: 3px dashed var(--border-color);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            background: var(--bg-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background: var(--accent-light);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--accent-color);
+            background: var(--accent-light);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .upload-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .upload-details {
+            background: var(--accent-light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .upload-details div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .upload-button {
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .upload-button:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .processing-area {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .processing-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .processing-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .processing-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .chat-area {
+            display: none;
+        }
+
+        .chat-header {
+            background: var(--bg-accent);
+            padding: 1.5rem;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .file-icon {
+          width: var(--icon-size);
+          height: var(--icon-size);
+          background: var(--accent-color);
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: calc(var(--icon-font-size) - 2px);
+        }
+
+        .file-details h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .file-tag {
+            background: var(--success-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .chat-message {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .message-icon {
+            width: var(--icon-size);
+            height: var(--icon-size);
+            min-width: var(--icon-size);
+            min-height: var(--icon-size);
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: var(--icon-font-size);
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden; /* prevent inner icon overflow */
+        }
+
+        .chat-input-area {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .send-button {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            transform: scale(1.1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .steps-section {
+            background: var(--bg-secondary);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .steps-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 3rem;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-item {
+            text-align: center;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .step-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .upload-new-btn {
+            background: var(--bg-primary);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-new-btn:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .footer-info {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-toggle {
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            
+            .footer-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        /* small raw JSON block for debugging / inspect */
+        .raw-json {
+        background: rgba(0,0,0,0.06);
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        margin-top: 0.6rem;
+        color: var(--text-primary);
+        }
+
+        /* helper for structured rendering */
+        .assistant-bullets ul { margin: 0.5rem 0 0.5rem 1.1rem; }
+        .assistant-bullets strong.section-title { display:block; margin-top:0.6rem; color:var(--text-primary); }
+
+    </style>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle-btn" aria-label="Toggle theme" role="switch" aria-checked="false">
+                <i class="fas fa-moon" id="theme-icon" aria-hidden="true"></i>
+                <span id="theme-text">Dark Mode</span>
+            </button>
+            
+            <h1 class="main-title">LUMINA</h1>
+            <p class="subtitle">Unlock the power of your documents with AI-driven chat</p>
+            <p class="tech-stack">Advanced RAG pipeline with Ollama, FAISS, and SentenceTransformers</p>
+            
+            <div class="badges">
+                <span class="badge badge-blue">
+                    <i class="fas fa-key"></i>
+                    No API Keys Required
+                </span>
+                <span class="badge badge-green">
+                    <i class="fas fa-check-circle"></i>
+                    Fully Offline
+                </span>
+                <span class="badge badge-orange">
+                    <i class="fas fa-shield-alt"></i>
+                    Privacy Focused
+                </span>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="main-content" id="upload-section">
+            <div class="upload-area" id="upload-area"
+                 ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div class="upload-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <h2 class="upload-title">Upload Your Documents</h2>
+                <p class="upload-description">Drop your PDF or TXT files here, or click to browse</p>
+                
+                <div class="upload-details">
+                    <div>
+                        <i class="fas fa-rocket" style="color: #e53e3e;"></i>
+                        <span><strong>AI-Powered Processing:</strong> PyMuPDF + SentenceTransformers</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-search" style="color: #38a169;"></i>
+                        <span><strong>Smart Search:</strong> FAISS vector similarity</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-comments" style="color: #3182ce;"></i>
+                        <span><strong>Local Chat:</strong> Ollama LLMs (LLaMA, Mistral)</span>
+                    </div>
+                </div>
+                
+                <button class="upload-button" id="choose-files-btn" type="button">
+                    <i class="fas fa-file-upload"></i>
+                    Choose Files
+                </button>
+                <input type="file" id="file-input" accept=".pdf,.txt" multiple>
+            </div>
+        </div>
+
+        <!-- Processing Section -->
+        <div class="main-content processing-area" id="processing-section">
+            <div class="processing-icon">
+                <i class="fas fa-cog fa-spin"></i>
+            </div>
+            <h2 class="processing-title">Processing Document</h2>
+            <p class="processing-subtitle" id="processing-subtitle">Splitting into chunks...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p class="progress-text" id="progress-text">0% complete</p>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="main-content chat-area" id="chat-section">
+            <div class="chat-header">
+                <h2 class="chat-title" id="chat-title">Chat with Resume_main_(1).pdf</h2>
+                <button class="upload-new-btn" onclick="resetToUpload()">
+                    <i class="fas fa-upload"></i>
+                    Upload New Document
+                </button>
+            </div>
+            
+            <div class="file-info">
+                <div class="file-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="file-details">
+                    <h4 id="file-name">Resume_main_(1).pdf</h4>
+                    <div class="file-tags">
+                        <span class="file-tag" id="chunks-tag">0 chunks indexed</span>
+                        <span class="file-tag" style="background: var(--accent-color);">AI-Powered</span>
+                    </div>
+                </div>
+                <div style="margin-left: auto; color: var(--text-secondary); font-size: 0.875rem;">
+                    Powered by<br>
+                    <strong>Ollama + FAISS</strong>
+                </div>
+            </div>
+
+            <div class="chat-message">
+                <div class="message-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <p><i class="fas fa-magic" style="color: var(--accent-color);"></i> Hi! I'm your document assistant. Ask me anything about your uploaded file.</p>
+                    <small style="color: var(--text-secondary); margin-top: 0.5rem; display: block;">System</small>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" placeholder="Ask me anything about your document..." id="chat-input" onkeypress="handleChatKeyPress(event)">
+                <button class="send-button" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-grid" id="features-section">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="feature-title">PDF Processing</h3>
+                <p class="feature-description">Extract and chunk documents using PyMuPDF</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="feature-title">Fast Search</h3>
+                <p class="feature-description">FAISS vector database for instant similarity search</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="feature-title">Local LLM</h3>
+                <p class="feature-description">Chat with Ollama models running locally</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Privacy First</h3>
+                <p class="feature-description">Everything runs offline on your machine</p>
+            </div>
+        </div>
+
+        <!-- Steps Section -->
+        <div class="steps-section" id="steps-section">
+            <h2 class="steps-title">How it works</h2>
+            <div class="steps-grid">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Upload Documents</h3>
+                    <p class="step-description">PDF/TXT files processed locally</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">AI Processing</h3>
+                    <p class="step-description">PyMuPDF + SentenceTransformers</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Vector Search</h3>
+                    <p class="step-description">FAISS similarity indexing</p>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Smart Chat</h3>
+                    <p class="step-description">Ollama LLM conversations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="download-chat-btn" onclick="downloadChat()" title="Download conversation">
+        <i class="fas fa-download"></i>
+        Download Chat
+    </button>
+
+    <script>
+        // -------------------------
+// Full <script> section for index.html
+// Paste this inside your page (replace the existing <script> block)
+// -------------------------
+
+// conversation store used for history and download
+window.conversation = window.conversation || [];
+
+// Theme state (initialized on DOMContentLoaded)
+let currentTheme = document.body.getAttribute('data-theme') || 'light';
+
+// Persisted/theme toggle
+function toggleTheme() {
+  currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.body.setAttribute('data-theme', currentTheme);
+
+  const themeIcon = document.getElementById('theme-icon');
+  const themeText = document.getElementById('theme-text');
+  const btn = document.getElementById('theme-toggle-btn');
+
+  if (currentTheme === 'dark') {
+    if (themeIcon) themeIcon.className = 'fas fa-sun';
+    if (themeText) themeText.textContent = 'Light Mode';
+    if (btn) btn.setAttribute('aria-checked', 'true');
+  } else {
+    if (themeIcon) themeIcon.className = 'fas fa-moon';
+    if (themeText) themeText.textContent = 'Dark Mode';
+    if (btn) btn.setAttribute('aria-checked', 'false');
+  }
+
+  try { localStorage.setItem('lumina_theme', currentTheme); } catch (e) { /* ignore */ }
+}
+
+// Basic HTML-escape
+function escapeHtml(unsafe) {
+  return String(unsafe || '')
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Convert assistant text into safe HTML: bullets, lists, paragraphs
+function answerTextToHtml(text) {
+  if (!text) return '<p></p>';
+
+  // If contains '•' use that as bullet separator
+  if (text.indexOf('•') !== -1) {
+    const parts = text.split('•').map(s => s.trim()).filter(Boolean);
+    if (parts.length > 1) {
+      return '<ul>' + parts.map(p => `<li>${escapeHtml(p)}</li>`).join('') + '</ul>';
+    }
+  }
+
+  // Convert lines starting with '-' or '*' to list
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (lines.length > 1 && lines.every(l => /^[-*]\s+/.test(l))) {
+    return '<ul>' + lines.map(l => `<li>${escapeHtml(l.replace(/^[-*]\s+/, ''))}</li>`).join('') + '</ul>';
+  }
+
+  // Multiple paragraphs
+  if (lines.length > 1) {
+    return lines.map(l => `<p>${escapeHtml(l)}</p>`).join('');
+  }
+
+  // Single line
+  return `<p>${escapeHtml(text)}</p>`;
+}
+
+// Add assistant message (HTML) to UI and push to conversation (stored as plain text)
+function addAssistantHtml(htmlContent, sources = []) {
+  const chatSection = document.getElementById('chat-section');
+  if (!chatSection) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'chat-message';
+  const time = new Date().toLocaleTimeString();
+
+  let sourcesHtml = '';
+  if (Array.isArray(sources) && sources.length) {
+    sourcesHtml = '<div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">';
+    sources.forEach(s => {
+      sourcesHtml += `<span class="file-tag" style="background:rgba(0,0,0,0.06); color:var(--text-secondary); padding:4px 8px; border-radius:8px; font-size:0.75rem;">${escapeHtml(s)}</span>`;
+    });
+    sourcesHtml += '</div>';
+  }
+
+  wrapper.innerHTML = `
+    <div class="message-icon"><i class="fas fa-robot"></i></div>
+    <div>
+      ${htmlContent}
+      ${sourcesHtml}
+      <small style="color: var(--text-secondary); margin-top: 0.5rem; display: block;">${time}</small>
+    </div>
+  `;
+
+  const inputArea = chatSection.querySelector('.chat-input-area');
+  chatSection.insertBefore(wrapper, inputArea);
+  wrapper.scrollIntoView({ behavior: 'smooth' });
+
+  // push to conversation store as plain text summary
+  try {
+    const plain = htmlContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    window.conversation.push({
+      role: 'assistant',
+      type: 'text',
+      content: plain,
+      timestamp: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('conversation push error', e);
+  }
+}
+
+// Render structured JSON result with optional top summary
+function addStructuredAssistantMessage(structured, options = {}) {
+  const noteHtml = options.note ? `<div style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:6px;"><em>${escapeHtml(options.note)}</em></div>` : '';
+  const topSummary = structured && structured.answer ? answerTextToHtml(structured.answer) : '';
+  let inner = '';
+
+  if (topSummary) inner += topSummary;
+  if (noteHtml) inner += noteHtml;
+
+  // Render other fields (except 'answer' and 'sources')
+  const keys = Object.keys(structured || {}).filter(k => k !== 'answer' && k !== 'sources');
+  if (keys.length === 0) {
+    inner += `<p><i>No structured fields returned.</i></p>`;
+  } else {
+    keys.forEach(k => {
+      const v = structured[k];
+      if (Array.isArray(v)) {
+        inner += `<strong class="section-title">${escapeHtml(k)}:</strong><ul>`;
+        v.forEach(item => inner += `<li>${escapeHtml(String(item))}</li>`);
+        inner += `</ul>`;
+      } else {
+        inner += `<strong class="section-title">${escapeHtml(k)}:</strong><p>${escapeHtml(String(v))}</p>`;
+      }
+    });
+  }
+
+  // show structured + sources (structured.sources preferred)
+  const sources = Array.isArray(structured.sources) ? structured.sources : [];
+  addAssistantHtml(inner, sources);
+
+  // push structured object to conversation store
+  try {
+    window.conversation.push({
+      role: 'assistant',
+      type: 'structured',
+      content: structured,
+      note: options.note || '',
+      timestamp: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('Failed to push structured conversation entry', e);
+  }
+}
+
+// Add a plain chat message (user or ai) - safe version that escapes HTML
+function addChatMessage(message, sender) {
+  const chatSection = document.getElementById('chat-section');
+  if (!chatSection) return;
+  const messageElement = document.createElement('div');
+  messageElement.className = 'chat-message';
+  const time = new Date().toLocaleTimeString();
+
+  if (sender === 'user') {
+    messageElement.innerHTML = `
+      <div class="message-icon" style="background: var(--success-color);">
+        <i class="fas fa-user"></i>
+      </div>
+      <div>
+        <p>${escapeHtml(message)}</p>
+        <small style="color: var(--text-secondary); margin-top: 0.5rem; display: block;">${time}</small>
+      </div>
+    `;
+  } else {
+    messageElement.innerHTML = `
+      <div class="message-icon">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div>
+        <p><i class="fas fa-magic" style="color: var(--accent-color);"></i> ${escapeHtml(message)}</p>
+        <small style="color: var(--text-secondary); margin-top: 0.5rem; display: block;">${time}</small>
+      </div>
+    `;
+  }
+
+  const inputArea = chatSection.querySelector('.chat-input-area');
+  chatSection.insertBefore(messageElement, inputArea);
+  messageElement.scrollIntoView({ behavior: 'smooth' });
+
+  // Also push to client-side conversation array for history & downloads
+  try {
+    window.conversation = window.conversation || [];
+    window.conversation.push({
+      role: sender === 'user' ? 'user' : 'assistant',
+      type: 'text',
+      content: String(message),
+      timestamp: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('Failed to push local conversation entry', e);
+  }
+}
+
+// -------------------------
+// File upload handling (robust)
+// -------------------------
+function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+function handleDragLeave(e) { e.currentTarget.classList.remove('dragover'); }
+function handleDrop(e) { e.preventDefault(); e.currentTarget.classList.remove('dragover'); const files = e.dataTransfer.files; processFiles(files); }
+
+async function processFiles(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  const fileName = file.name || 'document.pdf';
+
+  // UI: show processing
+  document.getElementById('upload-section').style.display = 'none';
+  document.getElementById('features-section').style.display = 'none';
+  document.getElementById('steps-section').style.display = 'none';
+  document.getElementById('processing-section').style.display = 'block';
+  document.getElementById('processing-subtitle').textContent = 'Uploading and processing...';
+  setProgress(5);
+
+  try {
+    const formData = new FormData();
+    if (file.size !== undefined) {
+      formData.append('pdf', file);
+    } else {
+      throw new Error('Upload requires a real file object. Use the app served by Flask and upload a PDF.');
+    }
+
+    const resp = await fetch('/upload', { method: 'POST', body: formData });
+    const data = await resp.json();
+
+    if (!resp.ok) throw new Error(data.error || 'Upload failed');
+
+    setProgress(100);
+    await new Promise(r => setTimeout(r, 400));
+
+    const chunkCount = data.chunk_count || 0;
+    document.getElementById('chunks-tag').textContent = `${chunkCount} chunks indexed`;
+
+    showChatInterface(fileName);
+  } catch (err) {
+    console.error('Upload error:', err);
+    alert('Upload failed: ' + (err.message || err));
+    // restore upload UI
+    document.getElementById('processing-section').style.display = 'none';
+    document.getElementById('upload-section').style.display = 'block';
+    document.getElementById('features-section').style.display = 'grid';
+    document.getElementById('steps-section').style.display = 'block';
+  } finally {
+    const fileInput = document.getElementById('file-input');
+    if (fileInput) fileInput.value = '';
+  }
+}
+
+function setProgress(pct) {
+  const progressFill = document.getElementById('progress-fill');
+  const progressText = document.getElementById('progress-text');
+  if (progressFill) progressFill.style.width = pct + '%';
+  if (progressText) progressText.textContent = Math.round(pct) + '% complete';
+}
+
+function showChatInterface(fileName) {
+  document.getElementById('processing-section').style.display = 'none';
+  document.getElementById('chat-section').style.display = 'block';
+  document.getElementById('chat-title').textContent = `Chat with ${fileName}`;
+  document.getElementById('file-name').textContent = fileName;
+  document.getElementById('chat-input').focus();
+}
+
+function resetToUpload() {
+  document.getElementById('chat-section').style.display = 'none';
+  document.getElementById('upload-section').style.display = 'block';
+  document.getElementById('features-section').style.display = 'grid';
+  document.getElementById('steps-section').style.display = 'block';
+  document.getElementById('file-input').value = '';
+  // reset conversation and messages
+  window.conversation = [];
+  const chatSection = document.getElementById('chat-section');
+  const inputArea = chatSection.querySelector('.chat-input-area');
+  const messages = Array.from(chatSection.querySelectorAll('.chat-message'));
+  messages.forEach((m, idx) => {
+    // keep first system message only
+    if (idx > 0) m.remove();
+  });
+  setProgress(0);
+  document.getElementById('chunks-tag').textContent = `0 chunks indexed`;
+}
+
+// -------------------------
+// Chat / send message
+// -------------------------
+function handleChatKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+
+function getHistoryForServer(userMessage) {
+  const conv = (window.conversation || []).map(m => ({
+    role: m.role || 'user',
+    content: m.type === 'text' ? String(m.content) : JSON.stringify(m.content)
+  }));
+  if (userMessage) conv.push({ role: 'user', content: userMessage });
+  return conv;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  if (!input) return;
+  const message = input.value.trim();
+  if (!message) return;
+
+  addChatMessage(message, 'user');
+  input.value = '';
+
+  // Thinking indicator
+  const thinkingId = 'thinking-' + Date.now();
+  const chatSection = document.getElementById('chat-section');
+  const thinkingEl = document.createElement('div');
+  thinkingEl.className = 'chat-message';
+  thinkingEl.id = thinkingId;
+  thinkingEl.innerHTML = `<div class="message-icon"><i class="fas fa-robot"></i></div><div><p><i class="fas fa-magic" style="color: var(--accent-color);"></i> ⏳ Thinking...</p></div>`;
+  const inputArea = chatSection.querySelector('.chat-input-area');
+  chatSection.insertBefore(thinkingEl, inputArea);
+  thinkingEl.scrollIntoView({ behavior: 'smooth' });
+
+  try {
+    const history = getHistoryForServer(message);
+
+    const resp = await fetch('/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: message, history })
+    });
+
+    let data;
+    try {
+      data = await resp.json();
+    } catch (jsonErr) {
+      const rawText = await resp.text();
+      document.getElementById(thinkingId)?.remove();
+      addAssistantHtml(`<pre class="raw-json">${escapeHtml(rawText)}</pre>`);
+      return;
+    }
+
+    // remove thinking indicator
+    document.getElementById(thinkingId)?.remove();
+
+    if (!resp.ok || data.error) {
+      const errMsg = data.error || 'Server error';
+      addAssistantHtml(`<p>❌ ${escapeHtml(errMsg)}</p>`);
+      return;
+    }
+
+    // structured preferred rendering
+    if (data.structured) {
+      if (data.answer && String(data.answer).trim()) {
+        addAssistantHtml(answerTextToHtml(String(data.answer).trim()), data.sources || []);
+      }
+      addStructuredAssistantMessage(data.structured, { note: 'Sourced from document' });
+      return;
+    }
+
+    // normal path: server returns data.answer (clean), possibly with sources
+    if (data.answer) {
+      addAssistantHtml(answerTextToHtml(String(data.answer)), data.sources || []);
+      return;
+    }
+
+    // fallback: raw text
+    if (data.raw) {
+      addAssistantHtml(answerTextToHtml(String(data.raw)), data.sources || []);
+      return;
+    }
+
+    addAssistantHtml('<p>❌ No answer in response from server.</p>');
+  } catch (err) {
+    console.error('Network /ask error:', err);
+    document.getElementById(thinkingId)?.remove();
+    addAssistantHtml(`<p>❌ Network error: ${escapeHtml(err.message || String(err))}</p>`);
+  }
+}
+
+// -------------------------
+// Download helpers
+// -------------------------
+function downloadJSONFile(filename, obj) {
+  const a = document.createElement('a');
+  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2));
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function downloadTextFile(filename, text) {
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function conversationToPlainText(conv) {
+  let text = '';
+  (conv || []).forEach(msg => {
+    const t = new Date(msg.timestamp || Date.now()).toLocaleString();
+    if (msg.type === 'text') {
+      text += `[${t}] ${msg.role.toUpperCase()}: ${msg.content}\n\n`;
+    } else if (msg.type === 'structured') {
+      text += `[${t}] ${msg.role.toUpperCase()} (structured):\n`;
+      try {
+        Object.entries(msg.content || {}).forEach(([k, v]) => {
+          text += `  ${k}:\n`;
+          if (Array.isArray(v)) {
+            v.forEach(item => text += `    - ${String(item)}\n`);
+          } else {
+            text += `    ${String(v)}\n`;
+          }
+        });
+      } catch (e) {
+        text += '  (could not serialize structured content)\n';
+      }
+      text += '\n';
+    }
+  });
+  return text;
+}
+
+function downloadChat() {
+  if (!window.conversation || window.conversation.length === 0) {
+    alert('No messages to download.');
+    return;
+  }
+  const meta = { generated_at: new Date().toISOString(), page: window.location.pathname || '/' };
+  downloadJSONFile('conversation.json', { meta, conversation: window.conversation });
+  downloadTextFile('conversation.txt', conversationToPlainText(window.conversation));
+}
+
+// -------------------------
+// Init handlers
+// -------------------------
+document.addEventListener('DOMContentLoaded', function() {
+  // File input handling: avoid double triggers
+  const uploadArea = document.getElementById('upload-area');
+  const chooseBtn = document.getElementById('choose-files-btn');
+  const fileInput = document.getElementById('file-input');
+
+  let dialogOpen = false;
+  function openDialogOnce() {
+    if (dialogOpen) return;
+    dialogOpen = true;
+    fileInput.click();
+    setTimeout(() => { dialogOpen = false; }, 800);
+  }
+
+  if (chooseBtn) {
+    chooseBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openDialogOnce();
+    });
+  }
+  if (uploadArea) {
+    uploadArea.addEventListener('click', function(e) {
+      openDialogOnce();
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener('change', async function(e) {
+      const files = Array.from(e.target.files || []);
+      const validTypes = ['.pdf', '.txt'];
+      const invalidFiles = files.filter(file => {
+        const extension = '.' + file.name.split('.').pop().toLowerCase();
+        return !validTypes.includes(extension);
+      });
+      if (invalidFiles.length > 0) {
+        alert('Please select only PDF or TXT files.');
+        e.target.value = '';
+        return;
+      }
+      if (files.length > 10) {
+        alert('Maximum 10 files allowed at once.');
+        e.target.value = '';
+        return;
+      }
+      await processFiles(files);
+      e.target.value = '';
+    });
+  }
+
+  // hover effects for feature cards
+  const featureCards = document.querySelectorAll('.feature-card');
+  featureCards.forEach(card => {
+    card.addEventListener('mouseenter', function() { this.style.transform = 'translateY(-5px) scale(1.02)'; });
+    card.addEventListener('mouseleave', function() { this.style.transform = 'translateY(0) scale(1)'; });
+  });
+
+  // Apply saved or system theme preference
+  try {
+    const saved = localStorage.getItem('lumina_theme');
+    if (saved === 'dark' || saved === 'light') {
+      currentTheme = saved;
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      currentTheme = 'dark';
+    } else {
+      currentTheme = 'light';
+    }
+  } catch (e) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      currentTheme = 'dark';
+    } else {
+      currentTheme = 'light';
+    }
+  }
+
+  document.body.setAttribute('data-theme', currentTheme);
+  const themeIcon = document.getElementById('theme-icon');
+  const themeText = document.getElementById('theme-text');
+  const btn = document.getElementById('theme-toggle-btn');
+  if (currentTheme === 'dark') {
+    if (themeIcon) themeIcon.className = 'fas fa-sun';
+    if (themeText) themeText.textContent = 'Light Mode';
+    if (btn) btn.setAttribute('aria-checked', 'true');
+  } else {
+    if (themeIcon) themeIcon.className = 'fas fa-moon';
+    if (themeText) themeText.textContent = 'Dark Mode';
+    if (btn) btn.setAttribute('aria-checked', 'false');
+  }
+});
+    </script>
+</body>
+</html>
